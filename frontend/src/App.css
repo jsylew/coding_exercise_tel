@@ -10,10 +10,32 @@
   padding-top: 2vh;
 }
 
+.Message {
+  color: rgb(100, 150, 245);
+  font-weight: 600;
+  padding-top: 1vh;
+}
+
 .SubDataContainer {
   margin-top: 3vh;
 }
 
 .SubDataBlueRow {
   background-color: rgba(100, 150, 245, 0.2);
+}
+
+.FormLabelHorz {
+  padding-top: 0.6vh;
+}
+
+.FormRow {
+  margin-bottom: 1vh;
+}
+
+.ButtonMargin {
+  margin-left: 1vh;
+}
+
+.ContainerAlignRight {
+  text-align: right;
 }

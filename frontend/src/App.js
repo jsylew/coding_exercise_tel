@@ -15,7 +15,7 @@ function App() {
     setMessage("");
     setShowData(false);
     try {
-      let result = await fetch(
+      let res = await fetch(
         `http://127.0.0.1:5000/ims/subscriber/${phoneNum}`,
         {
           method: "GET",
@@ -25,8 +25,8 @@ function App() {
         }
       );
 
-      let resultJson = await result.json();
-      if (result.status === 200) {
+      let resultJson = await res.json();
+      if (res.status === 200) {
         setPhoneNum("");
         setSubscriberData(resultJson);
         setShowData(true);
@@ -42,13 +42,14 @@ function App() {
   return (
     <div className="App">
       <Form onSubmit={handleSearch}>
-        <Form.Group className="mb-3" controlId="formBasicEmail">
+        <Form.Group className="mb-3">
           <Form.Label>Search for Subscriber by Phone Number</Form.Label>
           <Form.Control
             required
             type="tel"
             pattern="[0-9]{11}"
             placeholder="Enter subscriber phone number"
+            value={phoneNum}
             onChange={(e) => setPhoneNum(e.target.value)}
           />
           <Form.Text className="text-muted">
