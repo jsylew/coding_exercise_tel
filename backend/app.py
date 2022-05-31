@@ -70,6 +70,7 @@ def put_subscriber(phoneNumber):
         }, 400
     
     data = request.get_json()
+    print(data)
 
     # assumes all fields are mandatory
     if not data or "phoneNumber" not in data or \
@@ -81,6 +82,24 @@ def put_subscriber(phoneNumber):
                         "message": "Missing fields."
                     }, 400
     
+    if (not data["phoneNumber"] or data["phoneNumber"].isspace()) or \
+        (not data["username"] or data["username"].isspace()) or \
+        (not data["password"] or data["password"].isspace() )or \
+            (not data["domain"] or data["domain"].isspace()) or \
+            (not data["status"] or data["status"].isspace()) or \
+                (not data["features"] or str(data["features"]).isspace()):
+            return {
+                "error": "Bad Request",
+                "message": "All fields must be filled in."
+            }, 400
+    
+    # check length of new phone number
+    if len(data["phoneNumber"]) != PHONE_NUM_LEN:
+        return {
+            "error": "Bad Request",
+            "message": "Invalid phone number. Phone number must be 11 digits long."
+        }, 400
+
     sub = Subscriber.query.filter_by(phone_num=phoneNumber).first()
     # subscriber exists
     if sub:
