@@ -1,0 +1,19 @@
+.App {
+  margin: auto;
+  padding-top: 10vh;
+  width: 50vh;
+}
+
+.NotFoundMessage {
+  margin: auto;
+  color: red;
+  padding-top: 2vh;
+}
+
+.SubDataContainer {
+  margin-top: 3vh;
+}
+
+.SubDataBlueRow {
+  background-color: rgba(100, 150, 245, 0.2);
+}
