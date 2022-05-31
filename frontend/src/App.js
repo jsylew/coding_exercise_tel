@@ -8,12 +8,12 @@ function App() {
   const [phoneNum, setPhoneNum] = useState("");
   const [message, setMessage] = useState("");
   const [subscriberData, setSubscriberData] = useState("");
-  const [showData, setShowData] = useState(false);
+  const [showForm, setShowForm] = useState(false);
 
   const handleSearch = async (e) => {
     e.preventDefault();
     setMessage("");
-    setShowData(false);
+    setSubscriberData("");
     try {
       let res = await fetch(
         `http://127.0.0.1:5000/ims/subscriber/${phoneNum}`,
@@ -29,8 +29,6 @@ function App() {
       if (res.status === 200) {
         setPhoneNum("");
         setSubscriberData(resultJson);
-        setShowData(true);
-        // console.log(resultJson);
       } else {
         setMessage("Subscriber not found.");
       }
@@ -57,9 +55,14 @@ function App() {
           </Form.Text>
         </Form.Group>
 
-        <Button variant="primary" type="submit">
-          Search
-        </Button>
+        <div className="d-flex justify-content-between">
+          <Button variant="primary" type="submit">
+            Search
+          </Button>
+          <Button variant="outline-primary" onClick={() => setShowForm(true)}>
+            Add New Subscriber
+          </Button>
+        </div>
       </Form>
 
       {message && (
@@ -73,7 +76,20 @@ function App() {
         </Alert>
       )}
 
-      <div>{showData && <SubscriberForm subData={subscriberData} />}</div>
+      <div>
+        {subscriberData && (
+          <SubscriberForm subData={subscriberData} newForm={false} />
+        )}
+      </div>
+      <div>
+        {showForm && (
+          <SubscriberForm
+            subData={""}
+            newForm={true}
+            setShowForm={setShowForm}
+          />
+        )}
+      </div>
     </div>
   );
 }

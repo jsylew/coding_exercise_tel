@@ -1,8 +1,8 @@
 import { Container, Col, Row, Form, Button, Alert } from "react-bootstrap";
 import { useState } from "react";
 
-function SubscriberForm({ subData }) {
-  const [noEdit, setNoEdit] = useState(true);
+function SubscriberForm({ subData, newForm, setShowForm }) {
+  const [showEdit, setShowEdit] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
   const [updateSuccess, setUpdateSuccess] = useState(false);
   const [deleteSuccess, setDeleteSuccess] = useState(false);
@@ -14,9 +14,10 @@ function SubscriberForm({ subData }) {
   const [domain, setDomain] = useState(subData.domain);
   const [status, setStatus] = useState(subData.status);
   const [features, setFeatures] = useState(subData.features);
+  const [showNewForm, setShowNewForm] = useState(newForm);
 
   const resetValues = () => {
-    setNoEdit(true);
+    setShowEdit(false);
     setPhoneNum(subData.phone_num);
     setUsername(subData.username);
     setPassword(subData.password);
@@ -52,7 +53,7 @@ function SubscriberForm({ subData }) {
 
       let resultJson = await res.json();
       if (res.status === 200) {
-        setNoEdit(true);
+        setShowEdit(false);
         setUpdateSuccess(true);
         setMessage("Subscriber information updated.");
       } else {
@@ -140,8 +141,8 @@ function SubscriberForm({ subData }) {
                   type="tel"
                   pattern="[0-9]{11}"
                   value={phoneNum}
-                  readOnly={noEdit}
-                  disabled={noEdit}
+                  readOnly={showEdit || showNewForm ? false : true}
+                  disabled={showEdit || showNewForm ? false : true}
                   onChange={(e) =>
                     handleFormChanges(setPhoneNum, e.target.value)
                   }
@@ -157,8 +158,8 @@ function SubscriberForm({ subData }) {
                   required
                   type="text"
                   value={username}
-                  readOnly={noEdit}
-                  disabled={noEdit}
+                  readOnly={showEdit || showNewForm ? false : true}
+                  disabled={showEdit || showNewForm ? false : true}
                   onChange={(e) =>
                     handleFormChanges(setUsername, e.target.value)
                   }
@@ -174,8 +175,8 @@ function SubscriberForm({ subData }) {
                   required
                   type={showPassword ? "text" : "password"}
                   value={password}
-                  readOnly={noEdit}
-                  disabled={noEdit}
+                  readOnly={showEdit || showNewForm ? false : true}
+                  disabled={showEdit || showNewForm ? false : true}
                   onChange={(e) =>
                     handleFormChanges(setPassword, e.target.value)
                   }
@@ -197,8 +198,8 @@ function SubscriberForm({ subData }) {
                   required
                   type="text"
                   value={domain}
-                  readOnly={noEdit}
-                  disabled={noEdit}
+                  readOnly={showEdit || showNewForm ? false : true}
+                  disabled={showEdit || showNewForm ? false : true}
                   onChange={(e) => handleFormChanges(setDomain, e.target.value)}
                 />
               </Col>
@@ -212,8 +213,8 @@ function SubscriberForm({ subData }) {
                   required
                   type="text"
                   value={status}
-                  readOnly={noEdit}
-                  disabled={noEdit}
+                  readOnly={showEdit || showNewForm ? false : true}
+                  disabled={showEdit || showNewForm ? false : true}
                   onChange={(e) => handleFormChanges(setStatus, e.target.value)}
                 />
               </Col>
@@ -228,8 +229,8 @@ function SubscriberForm({ subData }) {
                   as="textarea"
                   rows={5}
                   value={features}
-                  readOnly={noEdit}
-                  disabled={noEdit}
+                  readOnly={showEdit || showNewForm ? false : true}
+                  disabled={showEdit || showNewForm ? false : true}
                   onChange={(e) =>
                     handleFormChanges(setFeatures, e.target.value)
                   }
@@ -238,35 +239,39 @@ function SubscriberForm({ subData }) {
             </Row>
           </Form.Group>
 
-          {noEdit ? (
-            <Row>
-              <Col className="ContainerAlignRight">
-                <Button
-                  className="ButtonMargin"
-                  variant="primary"
-                  onClick={() => {
-                    setNoEdit(false);
-                  }}
-                >
-                  Edit
-                </Button>
-                <Button
-                  className="ButtonMargin"
-                  variant="danger"
-                  onClick={() => {
-                    setConfirmDelete(true);
-                  }}
-                >
-                  Delete
-                </Button>
-              </Col>
-            </Row>
+          {!showEdit && !showNewForm ? (
+            <div className="d-flex justify-content-end">
+              <Button
+                className="ButtonMargin"
+                variant="primary"
+                onClick={() => {
+                  setShowEdit(true);
+                }}
+              >
+                Edit
+              </Button>
+              <Button
+                className="ButtonMargin"
+                variant="danger"
+                onClick={() => {
+                  setConfirmDelete(true);
+                }}
+              >
+                Delete
+              </Button>
+            </div>
           ) : (
-            <div className="ContainerAlignRight">
+            <div className="d-flex justify-content-end">
               <Button
                 className="ButtonMargin"
                 variant="secondary"
-                onClick={resetValues}
+                onClick={
+                  showNewForm
+                    ? () => {
+                        setShowForm(false);
+                      }
+                    : resetValues
+                }
               >
                 Cancel
               </Button>
