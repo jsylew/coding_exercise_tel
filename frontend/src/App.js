@@ -4,6 +4,15 @@ import { Form, Button, Alert } from "react-bootstrap";
 import "bootstrap/dist/css/bootstrap.min.css";
 import SubscriberForm from "./SubscriberForm";
 
+const blankForm = {
+  phone_num: "",
+  username: "",
+  password: "",
+  domain: "",
+  status: "",
+  features: "",
+};
+
 function App() {
   const [phoneNum, setPhoneNum] = useState("");
   const [message, setMessage] = useState("");
@@ -69,7 +78,7 @@ function App() {
             onClick={handleAddBtn}
             disabled={subscriberData}
           >
-            Add New Subscriber
+            Add/Update Subscriber
           </Button>
         </div>
       </Form>
@@ -90,16 +99,20 @@ function App() {
           <SubscriberForm
             subData={subscriberData}
             newForm={false}
+            setShowForm={setShowForm}
             setSubscriberData={setSubscriberData}
+            setParentMessage={setMessage}
           />
         )}
       </div>
       <div>
         {showForm && (
           <SubscriberForm
-            subData={""}
+            subData={blankForm}
             newForm={true}
             setShowForm={setShowForm}
+            setSubscriberData={setSubscriberData}
+            setParentMessage={setMessage}
           />
         )}
       </div>

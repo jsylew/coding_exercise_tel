@@ -1,9 +1,15 @@
 import { Container, Col, Row, Form, Button, Alert } from "react-bootstrap";
 import { useState } from "react";
 
-function SubscriberForm({ subData, newForm, setSubscriberData, setShowForm }) {
+function SubscriberForm({
+  subData,
+  newForm,
+  setSubscriberData,
+  setShowForm,
+  setParentMessage,
+}) {
   // booleans to trigger changes in view
-  const [showEdit, setShowEdit] = useState(false);
+  const [showEdit, setShowEdit] = useState(newForm);
   const [showPassword, setShowPassword] = useState(false);
   const [updateSuccess, setUpdateSuccess] = useState(false);
   const [deleteSuccess, setDeleteSuccess] = useState(false);
@@ -72,7 +78,7 @@ function SubscriberForm({ subData, newForm, setSubscriberData, setShowForm }) {
     e.preventDefault();
     try {
       let res = await fetch(
-        `http://127.0.0.1:5000/ims/subscriber/${subData.phone_num}`,
+        `http://127.0.0.1:5000/ims/subscriber/${phoneNum}`,
         {
           method: "DELETE",
         }
@@ -83,13 +89,17 @@ function SubscriberForm({ subData, newForm, setSubscriberData, setShowForm }) {
         setConfirmDelete(false);
         setUpdateSuccess(true);
         setDeleteSuccess(true);
-        setMessage(`Success. ${resultJson.success}`);
+        setSubscriberData("");
+        setShowForm(false);
+        setParentMessage(`Success. ${resultJson.success}`);
       } else {
         setUpdateSuccess(false);
         setMessage(`Update failed.`);
       }
     } catch (err) {
+      console.log(err);
       setDeleteSuccess(false);
+      setUpdateSuccess(false);
       setMessage("Something went wrong.");
     }
   };
@@ -146,9 +156,8 @@ function SubscriberForm({ subData, newForm, setSubscriberData, setShowForm }) {
                   type="tel"
                   pattern="[0-9]{11}"
                   value={phoneNum}
-                  readOnly={showEdit || newForm ? false : true}
-                  disabled={showEdit || newForm ? false : true}
-                  // if either showEdit or newForm is true, field should be read only and disabled
+                  readOnly={!showEdit}
+                  disabled={!showEdit}
                   onChange={(e) =>
                     handleFormChanges(setPhoneNum, e.target.value)
                   }
@@ -164,8 +173,8 @@ function SubscriberForm({ subData, newForm, setSubscriberData, setShowForm }) {
                   required
                   type="text"
                   value={username}
-                  readOnly={showEdit || newForm ? false : true}
-                  disabled={showEdit || newForm ? false : true}
+                  readOnly={!showEdit}
+                  disabled={!showEdit}
                   onChange={(e) =>
                     handleFormChanges(setUsername, e.target.value)
                   }
@@ -181,8 +190,8 @@ function SubscriberForm({ subData, newForm, setSubscriberData, setShowForm }) {
                   required
                   type={showPassword ? "text" : "password"}
                   value={password}
-                  readOnly={showEdit || newForm ? false : true}
-                  disabled={showEdit || newForm ? false : true}
+                  readOnly={!showEdit}
+                  disabled={!showEdit}
                   onChange={(e) =>
                     handleFormChanges(setPassword, e.target.value)
                   }
@@ -204,8 +213,8 @@ function SubscriberForm({ subData, newForm, setSubscriberData, setShowForm }) {
                   required
                   type="text"
                   value={domain}
-                  readOnly={showEdit || newForm ? false : true}
-                  disabled={showEdit || newForm ? false : true}
+                  readOnly={!showEdit}
+                  disabled={!showEdit}
                   onChange={(e) => handleFormChanges(setDomain, e.target.value)}
                 />
               </Col>
@@ -219,8 +228,8 @@ function SubscriberForm({ subData, newForm, setSubscriberData, setShowForm }) {
                   required
                   type="text"
                   value={status}
-                  readOnly={showEdit || newForm ? false : true}
-                  disabled={showEdit || newForm ? false : true}
+                  readOnly={!showEdit}
+                  disabled={!showEdit}
                   onChange={(e) => handleFormChanges(setStatus, e.target.value)}
                 />
               </Col>
@@ -235,8 +244,8 @@ function SubscriberForm({ subData, newForm, setSubscriberData, setShowForm }) {
                   as="textarea"
                   rows={5}
                   value={features}
-                  readOnly={showEdit || newForm ? false : true}
-                  disabled={showEdit || newForm ? false : true}
+                  readOnly={!showEdit}
+                  disabled={!showEdit}
                   onChange={(e) =>
                     handleFormChanges(setFeatures, e.target.value)
                   }
@@ -247,14 +256,20 @@ function SubscriberForm({ subData, newForm, setSubscriberData, setShowForm }) {
 
           {/* if form is not in edit or new form view, show edit and delete buttons.
           else, show cancel and update buttons */}
-          {!showEdit && !newForm ? (
+          {!showEdit ? (
             <div className="d-flex justify-content-end">
               <Button
                 className="ButtonMargin"
                 variant="outline-primary"
-                onClick={() => {
-                  setSubscriberData("");
-                }}
+                onClick={
+                  newForm
+                    ? () => {
+                        setShowForm(false);
+                      }
+                    : () => {
+                        setSubscriberData("");
+                      }
+                }
               >
                 Close
               </Button>
@@ -296,12 +311,12 @@ function SubscriberForm({ subData, newForm, setSubscriberData, setShowForm }) {
                 className="ButtonMargin"
                 variant="primary"
                 onClick={
-                  showEdit
+                  newForm
                     ? (e) => {
-                        handleSubmit(e, "EDIT");
+                        handleSubmit(e, "ADD");
                       }
                     : (e) => {
-                        handleSubmit(e, "ADD");
+                        handleSubmit(e, "EDIT");
                       }
                 }
               >
