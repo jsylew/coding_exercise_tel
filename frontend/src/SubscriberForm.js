@@ -1,20 +1,21 @@
 import { Container, Col, Row, Form, Button, Alert } from "react-bootstrap";
 import { useState } from "react";
 
-function SubscriberForm({ subData, newForm, setShowForm }) {
+function SubscriberForm({ subData, newForm, setSubscriberData, setShowForm }) {
+  // booleans to trigger changes in view
   const [showEdit, setShowEdit] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
   const [updateSuccess, setUpdateSuccess] = useState(false);
   const [deleteSuccess, setDeleteSuccess] = useState(false);
   const [message, setMessage] = useState("");
   const [confirmDelete, setConfirmDelete] = useState(false);
+  // form fields
   const [phoneNum, setPhoneNum] = useState(subData.phone_num);
   const [username, setUsername] = useState(subData.username);
   const [password, setPassword] = useState(subData.password);
   const [domain, setDomain] = useState(subData.domain);
   const [status, setStatus] = useState(subData.status);
   const [features, setFeatures] = useState(subData.features);
-  const [showNewForm, setShowNewForm] = useState(newForm);
 
   const resetValues = () => {
     setShowEdit(false);
@@ -94,6 +95,7 @@ function SubscriberForm({ subData, newForm, setShowForm }) {
 
   return (
     <Container className="SubDataContainer">
+      {/* alert message for update success or failure */}
       {message && (
         <Alert
           className="AlertMargin"
@@ -104,6 +106,7 @@ function SubscriberForm({ subData, newForm, setShowForm }) {
           {message}
         </Alert>
       )}
+      {/* alert message to confirm or cancel delete action */}
       {confirmDelete && (
         <Alert className="AlertMargin" variant="danger">
           <Alert.Heading>
@@ -128,6 +131,7 @@ function SubscriberForm({ subData, newForm, setShowForm }) {
           </div>
         </Alert>
       )}
+      {/* hide form if user is successfully deleted */}
       {!deleteSuccess && (
         <Form>
           <Form.Group className="mb-3">
@@ -141,8 +145,9 @@ function SubscriberForm({ subData, newForm, setShowForm }) {
                   type="tel"
                   pattern="[0-9]{11}"
                   value={phoneNum}
-                  readOnly={showEdit || showNewForm ? false : true}
-                  disabled={showEdit || showNewForm ? false : true}
+                  readOnly={showEdit || newForm ? false : true}
+                  disabled={showEdit || newForm ? false : true}
+                  // if either showEdit or newForm is true, field should be read only and disabled
                   onChange={(e) =>
                     handleFormChanges(setPhoneNum, e.target.value)
                   }
@@ -158,8 +163,8 @@ function SubscriberForm({ subData, newForm, setShowForm }) {
                   required
                   type="text"
                   value={username}
-                  readOnly={showEdit || showNewForm ? false : true}
-                  disabled={showEdit || showNewForm ? false : true}
+                  readOnly={showEdit || newForm ? false : true}
+                  disabled={showEdit || newForm ? false : true}
                   onChange={(e) =>
                     handleFormChanges(setUsername, e.target.value)
                   }
@@ -175,8 +180,8 @@ function SubscriberForm({ subData, newForm, setShowForm }) {
                   required
                   type={showPassword ? "text" : "password"}
                   value={password}
-                  readOnly={showEdit || showNewForm ? false : true}
-                  disabled={showEdit || showNewForm ? false : true}
+                  readOnly={showEdit || newForm ? false : true}
+                  disabled={showEdit || newForm ? false : true}
                   onChange={(e) =>
                     handleFormChanges(setPassword, e.target.value)
                   }
@@ -198,8 +203,8 @@ function SubscriberForm({ subData, newForm, setShowForm }) {
                   required
                   type="text"
                   value={domain}
-                  readOnly={showEdit || showNewForm ? false : true}
-                  disabled={showEdit || showNewForm ? false : true}
+                  readOnly={showEdit || newForm ? false : true}
+                  disabled={showEdit || newForm ? false : true}
                   onChange={(e) => handleFormChanges(setDomain, e.target.value)}
                 />
               </Col>
@@ -213,8 +218,8 @@ function SubscriberForm({ subData, newForm, setShowForm }) {
                   required
                   type="text"
                   value={status}
-                  readOnly={showEdit || showNewForm ? false : true}
-                  disabled={showEdit || showNewForm ? false : true}
+                  readOnly={showEdit || newForm ? false : true}
+                  disabled={showEdit || newForm ? false : true}
                   onChange={(e) => handleFormChanges(setStatus, e.target.value)}
                 />
               </Col>
@@ -229,8 +234,8 @@ function SubscriberForm({ subData, newForm, setShowForm }) {
                   as="textarea"
                   rows={5}
                   value={features}
-                  readOnly={showEdit || showNewForm ? false : true}
-                  disabled={showEdit || showNewForm ? false : true}
+                  readOnly={showEdit || newForm ? false : true}
+                  disabled={showEdit || newForm ? false : true}
                   onChange={(e) =>
                     handleFormChanges(setFeatures, e.target.value)
                   }
@@ -239,11 +244,22 @@ function SubscriberForm({ subData, newForm, setShowForm }) {
             </Row>
           </Form.Group>
 
-          {!showEdit && !showNewForm ? (
+          {/* if form is not in edit or new form view, show edit and delete buttons.
+          else, show cancel and update buttons */}
+          {!showEdit && !newForm ? (
             <div className="d-flex justify-content-end">
               <Button
                 className="ButtonMargin"
-                variant="primary"
+                variant="outline-primary"
+                onClick={() => {
+                  setSubscriberData("");
+                }}
+              >
+                Close
+              </Button>
+              <Button
+                className="ButtonMargin"
+                variant="warning"
                 onClick={() => {
                   setShowEdit(true);
                 }}
@@ -266,12 +282,12 @@ function SubscriberForm({ subData, newForm, setShowForm }) {
                 className="ButtonMargin"
                 variant="secondary"
                 onClick={
-                  showNewForm
+                  newForm
                     ? () => {
                         setShowForm(false);
                       }
                     : resetValues
-                }
+                } // if it's in new form view, cancel button reset and hides form from view. if it's in edit mode, reset values
               >
                 Cancel
               </Button>

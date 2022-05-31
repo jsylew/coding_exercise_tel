@@ -37,6 +37,11 @@ function App() {
     }
   };
 
+  const handleAddBtn = () => {
+    setShowForm(true);
+    setSubscriberData("");
+  };
+
   return (
     <div className="App">
       <Form onSubmit={handleSearch}>
@@ -56,10 +61,14 @@ function App() {
         </Form.Group>
 
         <div className="d-flex justify-content-between">
-          <Button variant="primary" type="submit">
+          <Button variant="primary" type="submit" disabled={showForm}>
             Search
           </Button>
-          <Button variant="outline-primary" onClick={() => setShowForm(true)}>
+          <Button
+            variant="outline-primary"
+            onClick={handleAddBtn}
+            disabled={subscriberData}
+          >
             Add New Subscriber
           </Button>
         </div>
@@ -78,7 +87,11 @@ function App() {
 
       <div>
         {subscriberData && (
-          <SubscriberForm subData={subscriberData} newForm={false} />
+          <SubscriberForm
+            subData={subscriberData}
+            newForm={false}
+            setSubscriberData={setSubscriberData}
+          />
         )}
       </div>
       <div>
