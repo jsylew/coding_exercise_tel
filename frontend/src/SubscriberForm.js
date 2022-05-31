@@ -31,11 +31,12 @@ function SubscriberForm({ subData, newForm, setSubscriberData, setShowForm }) {
 
   const handleShowPassword = () => setShowPassword(!showPassword);
 
-  const handleSubmit = async (e) => {
+  const handleSubmit = async (e, method) => {
     e.preventDefault();
+    let uri_phone = method === "EDIT" ? subData.phone_num : phoneNum;
     try {
       let res = await fetch(
-        `http://127.0.0.1:5000/ims/subscriber/${subData.phone_num}`,
+        `http://127.0.0.1:5000/ims/subscriber/${uri_phone}`,
         {
           method: "PUT",
           headers: {
@@ -294,7 +295,15 @@ function SubscriberForm({ subData, newForm, setSubscriberData, setShowForm }) {
               <Button
                 className="ButtonMargin"
                 variant="primary"
-                onClick={handleSubmit}
+                onClick={
+                  showEdit
+                    ? (e) => {
+                        handleSubmit(e, "EDIT");
+                      }
+                    : (e) => {
+                        handleSubmit(e, "ADD");
+                      }
+                }
               >
                 Update
               </Button>
