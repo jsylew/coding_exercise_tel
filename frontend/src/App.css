@@ -4,24 +4,12 @@
   width: 50vh;
 }
 
-.NotFoundMessage {
-  margin: auto;
-  color: red;
-  padding-top: 2vh;
-}
-
-.Message {
-  color: rgb(100, 150, 245);
-  font-weight: 600;
-  padding-top: 1vh;
+.AlertMargin {
+  margin-top: 2vh;
 }
 
 .SubDataContainer {
   margin-top: 3vh;
-}
-
-.SubDataBlueRow {
-  background-color: rgba(100, 150, 245, 0.2);
 }
 
 .FormLabelHorz {

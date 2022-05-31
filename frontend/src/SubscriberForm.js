@@ -1,9 +1,10 @@
-import { Container, Col, Row, Form, Button } from "react-bootstrap";
-import { useEffect, useState } from "react";
+import { Container, Col, Row, Form, Button, Alert } from "react-bootstrap";
+import { useState } from "react";
 
-function SubscriberTable({ subData }) {
+function SubscriberForm({ subData }) {
   const [noEdit, setNoEdit] = useState(true);
   const [showPassword, setShowPassword] = useState(false);
+  const [updateSuccess, setUpdateSuccess] = useState(false);
   const [message, setMessage] = useState("");
   const [phoneNum, setPhoneNum] = useState(subData.phone_num);
   const [username, setUsername] = useState(subData.username);
@@ -50,17 +51,30 @@ function SubscriberTable({ subData }) {
       let resultJson = await res.json();
       if (res.status === 200) {
         setNoEdit(true);
+        setUpdateSuccess(true);
         setMessage("Subscriber information updated.");
       } else {
-        setMessage("Update failed.");
+        setUpdateSuccess(false);
+        setMessage(`Update failed. ${resultJson.message}`);
       }
     } catch (err) {
-      setMessage("Update failed.");
+      setUpdateSuccess(false);
+      setMessage(`Update failed.`);
     }
   };
 
   return (
     <Container className="SubDataContainer">
+      {message && (
+        <Alert
+          className="AlertMargin"
+          variant={updateSuccess ? "success" : "danger"}
+          dismissible
+          onClose={() => setMessage("")}
+        >
+          {message}
+        </Alert>
+      )}
       <Form>
         <Form.Group className="mb-3">
           <Row className="FormRow">
@@ -75,7 +89,7 @@ function SubscriberTable({ subData }) {
                 value={phoneNum}
                 readOnly={noEdit}
                 disabled={noEdit}
-                onChange={(e) => handleFormChanges(setPassword, e.target.value)}
+                onChange={(e) => handleFormChanges(setPhoneNum, e.target.value)}
               />
             </Col>
           </Row>
@@ -165,11 +179,6 @@ function SubscriberTable({ subData }) {
 
         {noEdit ? (
           <Row>
-            <Col className="Message">
-              <p>
-                <em>{message}</em>
-              </p>
-            </Col>
             <Col className="ContainerAlignRight">
               <Button
                 className="ButtonMargin"
@@ -208,4 +217,4 @@ function SubscriberTable({ subData }) {
   );
 }
 
-export default SubscriberTable;
+export default SubscriberForm;

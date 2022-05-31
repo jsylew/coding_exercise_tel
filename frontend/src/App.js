@@ -1,8 +1,8 @@
 import "./App.css";
 import { useState } from "react";
-import { Form, Button } from "react-bootstrap";
+import { Form, Button, Alert } from "react-bootstrap";
 import "bootstrap/dist/css/bootstrap.min.css";
-import SubscriberTable from "./SubscriberTable";
+import SubscriberForm from "./SubscriberForm";
 
 function App() {
   const [phoneNum, setPhoneNum] = useState("");
@@ -61,16 +61,19 @@ function App() {
           Search
         </Button>
       </Form>
-      <div className="NotFoundMessage">
-        {message ? (
-          <p>
-            <em>{message}</em>
-          </p>
-        ) : null}
-      </div>
-      <div>
-        {showData ? <SubscriberTable subData={subscriberData} /> : null}
-      </div>
+
+      {message && (
+        <Alert
+          className="AlertMargin"
+          variant="danger"
+          dismissible
+          onClose={() => setMessage("")}
+        >
+          {message}
+        </Alert>
+      )}
+
+      <div>{showData && <SubscriberForm subData={subscriberData} />}</div>
     </div>
   );
 }
