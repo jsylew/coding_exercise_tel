@@ -5,7 +5,9 @@ function SubscriberForm({ subData }) {
   const [noEdit, setNoEdit] = useState(true);
   const [showPassword, setShowPassword] = useState(false);
   const [updateSuccess, setUpdateSuccess] = useState(false);
+  const [deleteSuccess, setDeleteSuccess] = useState(false);
   const [message, setMessage] = useState("");
+  const [confirmDelete, setConfirmDelete] = useState(false);
   const [phoneNum, setPhoneNum] = useState(subData.phone_num);
   const [username, setUsername] = useState(subData.username);
   const [password, setPassword] = useState(subData.password);
@@ -63,6 +65,32 @@ function SubscriberForm({ subData }) {
     }
   };
 
+  const handleDelete = async (e) => {
+    e.preventDefault();
+    try {
+      let res = await fetch(
+        `http://127.0.0.1:5000/ims/subscriber/${subData.phone_num}`,
+        {
+          method: "DELETE",
+        }
+      );
+
+      let resultJson = await res.json();
+      if (res.status === 200) {
+        setConfirmDelete(false);
+        setUpdateSuccess(true);
+        setDeleteSuccess(true);
+        setMessage(`Success. ${resultJson.success}`);
+      } else {
+        setUpdateSuccess(false);
+        setMessage(`Update failed.`);
+      }
+    } catch (err) {
+      setDeleteSuccess(false);
+      setMessage("Something went wrong.");
+    }
+  };
+
   return (
     <Container className="SubDataContainer">
       {message && (
@@ -75,144 +103,184 @@ function SubscriberForm({ subData }) {
           {message}
         </Alert>
       )}
-      <Form>
-        <Form.Group className="mb-3">
-          <Row className="FormRow">
-            <Col xs={4}>
-              <Form.Label className="FormLabelHorz">Phone Number</Form.Label>
-            </Col>
-            <Col>
-              <Form.Control
-                required
-                type="tel"
-                pattern="[0-9]{11}"
-                value={phoneNum}
-                readOnly={noEdit}
-                disabled={noEdit}
-                onChange={(e) => handleFormChanges(setPhoneNum, e.target.value)}
-              />
-            </Col>
-          </Row>
-          <Row className="FormRow">
-            <Col xs={4}>
-              <Form.Label className="FormLabelHorz">Username</Form.Label>
-            </Col>
-            <Col>
-              <Form.Control
-                required
-                type="text"
-                value={username}
-                readOnly={noEdit}
-                disabled={noEdit}
-                onChange={(e) => handleFormChanges(setUsername, e.target.value)}
-              />
-            </Col>
-          </Row>
-          <Row className="FormRow">
-            <Col xs={4}>
-              <Form.Label className="FormLabelHorz">Password</Form.Label>
-            </Col>
-            <Col>
-              <Form.Control
-                required
-                type={showPassword ? "text" : "password"}
-                value={password}
-                readOnly={noEdit}
-                disabled={noEdit}
-                onChange={(e) => handleFormChanges(setPassword, e.target.value)}
-              />
-              <Form.Check
-                type={"checkbox"}
-                id={"showPassword"}
-                label={"Show Password"}
-                onChange={handleShowPassword}
-              />
-            </Col>
-          </Row>
-          <Row className="FormRow">
-            <Col xs={4}>
-              <Form.Label className="FormLabelHorz">Domain</Form.Label>
-            </Col>
-            <Col>
-              <Form.Control
-                required
-                type="text"
-                value={domain}
-                readOnly={noEdit}
-                disabled={noEdit}
-                onChange={(e) => handleFormChanges(setDomain, e.target.value)}
-              />
-            </Col>
-          </Row>
-          <Row className="FormRow">
-            <Col xs={4}>
-              <Form.Label className="FormLabelHorz">Status</Form.Label>
-            </Col>
-            <Col>
-              <Form.Control
-                required
-                type="text"
-                value={status}
-                readOnly={noEdit}
-                disabled={noEdit}
-                onChange={(e) => handleFormChanges(setStatus, e.target.value)}
-              />
-            </Col>
-          </Row>
-          <Row className="FormRow">
-            <Col xs={4}>
-              <Form.Label className="FormLabelHorz">Features</Form.Label>
-            </Col>
-            <Col>
-              <Form.Control
-                required
-                as="textarea"
-                rows={5}
-                value={features}
-                readOnly={noEdit}
-                disabled={noEdit}
-                onChange={(e) => handleFormChanges(setFeatures, e.target.value)}
-              />
-            </Col>
-          </Row>
-        </Form.Group>
-
-        {noEdit ? (
-          <Row>
-            <Col className="ContainerAlignRight">
-              <Button
-                className="ButtonMargin"
-                variant="primary"
-                onClick={() => {
-                  setNoEdit(false);
-                }}
-              >
-                Edit
-              </Button>
-              <Button className="ButtonMargin" variant="danger">
-                Delete
-              </Button>
-            </Col>
-          </Row>
-        ) : (
-          <div className="ContainerAlignRight">
+      {confirmDelete && (
+        <Alert className="AlertMargin" variant="danger">
+          <Alert.Heading>
+            Are you sure you want to delete this subscriber?
+          </Alert.Heading>
+          <p>This cannot be undone.</p>
+          <div className="d-flex justify-content-end">
             <Button
               className="ButtonMargin"
-              variant="secondary"
-              onClick={resetValues}
+              variant="danger"
+              onClick={() => setConfirmDelete(false)}
             >
               Cancel
             </Button>
             <Button
               className="ButtonMargin"
-              variant="primary"
-              onClick={handleSubmit}
+              variant="outline-danger"
+              onClick={handleDelete}
             >
-              Submit
+              Delete
             </Button>
           </div>
-        )}
-      </Form>
+        </Alert>
+      )}
+      {!deleteSuccess && (
+        <Form>
+          <Form.Group className="mb-3">
+            <Row className="FormRow">
+              <Col xs={4}>
+                <Form.Label className="FormLabelHorz">Phone Number</Form.Label>
+              </Col>
+              <Col>
+                <Form.Control
+                  required
+                  type="tel"
+                  pattern="[0-9]{11}"
+                  value={phoneNum}
+                  readOnly={noEdit}
+                  disabled={noEdit}
+                  onChange={(e) =>
+                    handleFormChanges(setPhoneNum, e.target.value)
+                  }
+                />
+              </Col>
+            </Row>
+            <Row className="FormRow">
+              <Col xs={4}>
+                <Form.Label className="FormLabelHorz">Username</Form.Label>
+              </Col>
+              <Col>
+                <Form.Control
+                  required
+                  type="text"
+                  value={username}
+                  readOnly={noEdit}
+                  disabled={noEdit}
+                  onChange={(e) =>
+                    handleFormChanges(setUsername, e.target.value)
+                  }
+                />
+              </Col>
+            </Row>
+            <Row className="FormRow">
+              <Col xs={4}>
+                <Form.Label className="FormLabelHorz">Password</Form.Label>
+              </Col>
+              <Col>
+                <Form.Control
+                  required
+                  type={showPassword ? "text" : "password"}
+                  value={password}
+                  readOnly={noEdit}
+                  disabled={noEdit}
+                  onChange={(e) =>
+                    handleFormChanges(setPassword, e.target.value)
+                  }
+                />
+                <Form.Check
+                  type={"checkbox"}
+                  id={"showPassword"}
+                  label={"Show Password"}
+                  onChange={handleShowPassword}
+                />
+              </Col>
+            </Row>
+            <Row className="FormRow">
+              <Col xs={4}>
+                <Form.Label className="FormLabelHorz">Domain</Form.Label>
+              </Col>
+              <Col>
+                <Form.Control
+                  required
+                  type="text"
+                  value={domain}
+                  readOnly={noEdit}
+                  disabled={noEdit}
+                  onChange={(e) => handleFormChanges(setDomain, e.target.value)}
+                />
+              </Col>
+            </Row>
+            <Row className="FormRow">
+              <Col xs={4}>
+                <Form.Label className="FormLabelHorz">Status</Form.Label>
+              </Col>
+              <Col>
+                <Form.Control
+                  required
+                  type="text"
+                  value={status}
+                  readOnly={noEdit}
+                  disabled={noEdit}
+                  onChange={(e) => handleFormChanges(setStatus, e.target.value)}
+                />
+              </Col>
+            </Row>
+            <Row className="FormRow">
+              <Col xs={4}>
+                <Form.Label className="FormLabelHorz">Features</Form.Label>
+              </Col>
+              <Col>
+                <Form.Control
+                  required
+                  as="textarea"
+                  rows={5}
+                  value={features}
+                  readOnly={noEdit}
+                  disabled={noEdit}
+                  onChange={(e) =>
+                    handleFormChanges(setFeatures, e.target.value)
+                  }
+                />
+              </Col>
+            </Row>
+          </Form.Group>
+
+          {noEdit ? (
+            <Row>
+              <Col className="ContainerAlignRight">
+                <Button
+                  className="ButtonMargin"
+                  variant="primary"
+                  onClick={() => {
+                    setNoEdit(false);
+                  }}
+                >
+                  Edit
+                </Button>
+                <Button
+                  className="ButtonMargin"
+                  variant="danger"
+                  onClick={() => {
+                    setConfirmDelete(true);
+                  }}
+                >
+                  Delete
+                </Button>
+              </Col>
+            </Row>
+          ) : (
+            <div className="ContainerAlignRight">
+              <Button
+                className="ButtonMargin"
+                variant="secondary"
+                onClick={resetValues}
+              >
+                Cancel
+              </Button>
+              <Button
+                className="ButtonMargin"
+                variant="primary"
+                onClick={handleSubmit}
+              >
+                Update
+              </Button>
+            </div>
+          )}
+        </Form>
+      )}
     </Container>
   );
 }
